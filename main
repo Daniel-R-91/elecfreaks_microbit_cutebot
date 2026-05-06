@@ -1,0 +1,86 @@
+active = False
+moving = False
+checking = False
+
+def go_forward():
+    cuteBot.motors(30, 30)
+
+def turn_right(): 
+    basic.pause(1000)
+    cuteBot.motors(32, -32)
+    basic.pause(250)
+    cuteBot.stopcar()
+    basic.pause(250)
+
+def turn_left():
+    basic.pause(1000)
+    cuteBot.motors(-32, 32)
+    basic.pause(250)
+    cuteBot.stopcar()
+    basic.pause(250)
+
+def turn_180():
+    basic.pause(1000)
+    cuteBot.motors(-32, 32)
+    basic.pause(500)
+    cuteBot.stopcar()
+    basic.pause(250)
+
+while True:
+    distance = cuteBot.ultrasonic(cuteBot.SonarUnit.CENTIMETERS)
+
+    if not active:
+        if input.button_is_pressed(Button.A):
+            basic.show_number(3)
+            basic.show_number(2)
+            basic.show_number(1)
+            basic.clear_screen()
+            cuteBot.motors(30, 30)
+            active = True
+            moving = True
+
+    else:
+        if input.button_is_pressed(Button.B):
+            active = False
+            moving = False
+            checking = False
+            cuteBot.stopcar()
+
+        if not moving and not checking and distance >= 5:
+            moving = True
+            go_forward()
+
+        if moving and not checking and distance <= 5:
+            moving = False
+            checking = True
+            cuteBot.stopcar()
+
+        if checking:
+            distance = cuteBot.ultrasonic(cuteBot.SonarUnit.CENTIMETERS)
+            if distance <= 10:
+                turn_right()
+                basic.pause(500)
+                distance = cuteBot.ultrasonic(cuteBot.SonarUnit.CENTIMETERS)
+
+                if distance >= 10:
+                    moving = True
+                    checking = False
+                    go_forward()
+
+                else:
+                    turn_180()
+                    basic.pause(500)
+                    distance = cuteBot.ultrasonic(cuteBot.SonarUnit.CENTIMETERS)
+
+                    if distance >= 10:
+                        moving = True
+                        checking = False
+                        go_forward()
+
+                    else:
+                        turn_left()
+                        basic.pause(500)
+                        distance = cuteBot.ultrasonic(cuteBot.SonarUnit.CENTIMETERS)
+
+                        moving = True
+                        checking = False
